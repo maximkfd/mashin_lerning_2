@@ -32,3 +32,13 @@ for i in range(epochs):
     for j in range(len(theta)):
         theta[j] -= alpha * deriv_loss(j)
 
+aver = 0
+err = []
+for i in data:
+    x_ = i[Y] - f(i[X1], i[X2])
+    err.append(x_)
+    aver += x_
+    print(x_)
+aver /= len(data)
+print()
+print(aver)
