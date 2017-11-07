@@ -6,7 +6,7 @@ X2 = 1
 
 # init
 alpha = 0.1
-eps = 0.0000001
+eps = 0.00000001
 epochs = 250
 data = read_data()
 theta = [0, 0, 0]
