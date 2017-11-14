@@ -1,3 +1,5 @@
+import math
+
 from text_utils import read_data, process_input
 
 Y = 2
@@ -5,15 +7,15 @@ X1 = 0
 X2 = 1
 
 # init
-alpha = 0.1
-eps = 0.00000001
+alpha = 0.0000000001
+eps = 0.00001
 epochs = 250
 data = read_data()
 theta = [0, 0, 0]
 
-y_max = 0
-x1_max = 0
-x2_max = 0
+y_max = 1
+x1_max = 1
+x2_max = 1
 
 
 def f(x1, x2):
@@ -54,7 +56,16 @@ def deriv_loss(theta_index):
     sum *= 2 / len(data)
     return sum
 
-data = normalize(data)
+
+def normaleaze(data):
+    mul = [1000, 1, 100000]
+    for i in range(3):
+        for j in range(len(data)):
+            data[j][i] /= mul[i]
+    return data
+
+
+# data = normaleaze(data)
 # for i in range(epochs):
 j_ = 100
 while abs(j_) > eps:
@@ -73,18 +84,23 @@ for i in data:
     aver += i[Y]
 print()
 aver /= len(data)
+sm = 0
 for i in err:
+    sm += i
     print(i / aver)
+print()
+print(sm/len(err))
+print(math.sqrt(sm/len(err)))
 print()
 print(aver)
 print(theta)
-theta[0] *= y_max
-theta[1] *= x1_max
-theta[2] *= x2_max
+# theta[0] *= y_max
+# theta[1] *= x1_max
+# theta[2] *= x2_max
 print(theta)
-while True:
-    s = input("New point")
-    ints = process_input(s, 2)
-    print(f(ints[0], ints[1]))
+# while True:
+#     s = input("New point")
+#     ints = process_input(s, 2)
+#     print(f(ints[0], ints[1]))
 
 
