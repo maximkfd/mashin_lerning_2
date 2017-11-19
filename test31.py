@@ -57,16 +57,35 @@ def deriv_loss(theta_index):
     return sum
 
 
-def normaleaze(data):
-    mul = [1000, 1, 100000]
+# def normaleaze(data):
+#     mul = [1000, 1, 100000]
+#     for i in range(3):
+#         for j in range(len(data)):
+#             data[j][i] /= mul[i]
+#     return data
+
+def standardize(data):
+    mu = []
+    for i in range(3):
+        summ = 0
+        for j in range(len(data)):
+            summ += data[j][i]
+        mu.append(summ/len(data))
+    sigma = []
+    for i in range(3):
+        summ = 0
+        for j in range(len(data)):
+            summ += (data[j][i] - mu[i]) ** 2
+        sigma.append(math.sqrt(summ/len(data)))
     for i in range(3):
         for j in range(len(data)):
-            data[j][i] /= mul[i]
+            data[j][i] = (data[j][i]-mu[i])/sigma[i]
     return data
 
 
 # data = normaleaze(data)
 # for i in range(epochs):
+data = standardize(data)
 j_ = 100
 while abs(j_) > eps:
     for j in range(len(theta)):
@@ -89,8 +108,8 @@ for i in err:
     sm += i
     print(i / aver)
 print()
-print(sm/len(err))
-print(math.sqrt(sm/len(err)))
+print(sm / len(err))
+print(math.sqrt(sm / len(err)))
 print()
 print(aver)
 print(theta)
@@ -102,5 +121,3 @@ print(theta)
 #     s = input("New point")
 #     ints = process_input(s, 2)
 #     print(f(ints[0], ints[1]))
-
-
