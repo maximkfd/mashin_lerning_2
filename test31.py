@@ -5,13 +5,14 @@ from text_utils import read_data, process_input
 Y = 2
 X1 = 0
 X2 = 1
-
+mu = []
+sigma = []
 # init
-alpha = 0.0000000001
-eps = 0.00001
+alpha = 0.0001
+eps = 0.000000000001
 epochs = 250
 data = read_data()
-theta = [0, 0, 0]
+theta = [1, 1, 1]
 
 y_max = 1
 x1_max = 1
@@ -65,6 +66,7 @@ def deriv_loss(theta_index):
 #     return data
 
 def standardize(data):
+    global mu, sigma
     mu = []
     for i in range(3):
         summ = 0
@@ -86,18 +88,22 @@ def standardize(data):
 # data = normaleaze(data)
 # for i in range(epochs):
 data = standardize(data)
-j_ = 100
-while abs(j_) > eps:
+delta_min = 100
+while abs(delta_min) > eps:
+# for i in range(100):
     for j in range(len(theta)):
-        j_ = alpha * deriv_loss(j)
-        theta[j] += j_
+        delta = alpha * deriv_loss(j)
+        theta[j] += delta
+        delta_min = min(abs(delta), delta_min)
 
 aver = 0
 err = []
 abs_err = []
 for i in data:
-    x_ = i[Y] - f(i[X1], i[X2])
-    print(x_ * y_max)
+    calculated_cost = f(i[X1], i[X2])
+    x_ = i[Y] - calculated_cost
+    y_rewinded = calculated_cost * sigma[Y] + mu[Y]
+    print(y_rewinded)
     abs_err.append(x_)
     err.append(x_ ** 2)
     aver += i[Y]
