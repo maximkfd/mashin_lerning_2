@@ -72,17 +72,25 @@ def standardize(data):
         summ = 0
         for j in range(len(data)):
             summ += data[j][i]
-        mu.append(summ/len(data))
+        mu.append(summ / len(data))
     sigma = []
     for i in range(3):
         summ = 0
         for j in range(len(data)):
             summ += (data[j][i] - mu[i]) ** 2
-        sigma.append(math.sqrt(summ/len(data)))
+        sigma.append(math.sqrt(summ / len(data)))
     for i in range(3):
         for j in range(len(data)):
-            data[j][i] = (data[j][i]-mu[i])/sigma[i]
+            data[j][i] = (data[j][i] - mu[i]) / sigma[i]
     return data
+
+
+def destandardize_value(x, index):
+    return x * sigma[index] + mu[index]
+
+
+def standardize_value(x, index):
+    return (x - mu[index]) / sigma[index]
 
 
 # data = normaleaze(data)
@@ -90,7 +98,7 @@ def standardize(data):
 data = standardize(data)
 delta_min = 100
 while abs(delta_min) > eps:
-# for i in range(100):
+    # for i in range(100):
     for j in range(len(theta)):
         delta = alpha * deriv_loss(j)
         theta[j] += delta
@@ -104,9 +112,10 @@ for i in data:
     x_ = i[Y] - calculated_cost
     y_rewinded = calculated_cost * sigma[Y] + mu[Y]
     print(y_rewinded)
-    abs_err.append(x_)
-    err.append(x_ ** 2)
-    aver += i[Y]
+    abs_error = destandardize_value(i[Y], Y) - destandardize_value(calculated_cost, Y)
+    abs_err.append(abs_error)
+    err.append(abs_error ** 2)
+    aver += destandardize_value(i[Y], Y)
 print()
 aver /= len(data)
 sm = 0
@@ -123,7 +132,7 @@ print(theta)
 # theta[1] *= x1_max
 # theta[2] *= x2_max
 print(theta)
-# while True:
-#     s = input("New point")
-#     ints = process_input(s, 2)
-#     print(f(ints[0], ints[1]))
+while True:
+    s = input("New point")
+    ints = process_input(s, 2)
+    print(destandardize_value(f(standardize_value(ints[0], X1), standardize_value(ints[1], X2)), Y))
