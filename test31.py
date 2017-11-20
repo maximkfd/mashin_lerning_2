@@ -1,23 +1,17 @@
 import math
 
-from text_utils import read_data, process_input
+from standrad_utils import standardize, destandardize_value
+from text_utils import read_data
 
 Y = 2
 X1 = 0
 X2 = 1
-mu = []
-sigma = []
 # init
-alpha = 0.00001
-eps = 0.0000000000001
+alpha = 0.0001
+eps = 0.000000000001
 epochs = 250
 data = read_data()
 theta = [1, 1, 1]
-
-y_max = 1
-x1_max = 1
-x2_max = 1
-
 
 def f(x1, x2):
     return theta[0] + theta[1] * x1 + theta[2] * x2
@@ -58,43 +52,6 @@ def deriv_loss(theta_index):
     return sum
 
 
-# def normaleaze(data):
-#     mul = [1000, 1, 100000]
-#     for i in range(3):
-#         for j in range(len(data)):
-#             data[j][i] /= mul[i]
-#     return data
-
-def standardize(data):
-    global mu, sigma
-    mu = []
-    for i in range(3):
-        summ = 0
-        for j in range(len(data)):
-            summ += data[j][i]
-        mu.append(summ / len(data))
-    sigma = []
-    for i in range(3):
-        summ = 0
-        for j in range(len(data)):
-            summ += (data[j][i] - mu[i]) ** 2
-        sigma.append(math.sqrt(summ / len(data)))
-    for i in range(3):
-        for j in range(len(data)):
-            data[j][i] = (data[j][i] - mu[i]) / sigma[i]
-    return data
-
-
-def destandardize_value(x, index):
-    return x * sigma[index] + mu[index]
-
-
-def standardize_value(x, index):
-    return (x - mu[index]) / sigma[index]
-
-
-# data = normaleaze(data)
-# for i in range(epochs):
 data = standardize(data)
 delta_min = 100
 while abs(delta_min) > eps:
@@ -106,18 +63,14 @@ while abs(delta_min) > eps:
 
 aver = 0
 err = []
-abs_err = []
 for i in data:
     calculated_cost = f(i[X1], i[X2])
     x_ = i[Y] - calculated_cost
-    y_rewinded = calculated_cost * sigma[Y] + mu[Y]
+    y_rewinded = destandardize_value(calculated_cost, Y)
     # print(y_rewinded)
-    abs_error = destandardize_value(i[Y], Y) - destandardize_value(calculated_cost, Y)
-    abs_err.append(abs_error)
+    abs_error = destandardize_value(i[Y], Y) - y_rewinded
     err.append(abs_error ** 2)
-    aver += destandardize_value(i[Y], Y)
 print()
-aver /= len(data)
 sm = 0
 for i in err:
     sm += i
