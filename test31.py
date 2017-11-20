@@ -8,8 +8,8 @@ X2 = 1
 mu = []
 sigma = []
 # init
-alpha = 0.0001
-eps = 0.000000000001
+alpha = 0.00001
+eps = 0.0000000000001
 epochs = 250
 data = read_data()
 theta = [1, 1, 1]
@@ -111,7 +111,7 @@ for i in data:
     calculated_cost = f(i[X1], i[X2])
     x_ = i[Y] - calculated_cost
     y_rewinded = calculated_cost * sigma[Y] + mu[Y]
-    print(y_rewinded)
+    # print(y_rewinded)
     abs_error = destandardize_value(i[Y], Y) - destandardize_value(calculated_cost, Y)
     abs_err.append(abs_error)
     err.append(abs_error ** 2)
@@ -121,18 +121,13 @@ aver /= len(data)
 sm = 0
 for i in err:
     sm += i
-    print(i / aver)
-print()
+    # print(i / aver)
+print('Errors: ')
 print(sm / len(err))
 print(math.sqrt(sm / len(err)))
 print()
-print(aver)
-print(theta)
-# theta[0] *= y_max
-# theta[1] *= x1_max
-# theta[2] *= x2_max
-print(theta)
-while True:
-    s = input("New point")
-    ints = process_input(s, 2)
-    print(destandardize_value(f(standardize_value(ints[0], X1), standardize_value(ints[1], X2)), Y))
+print('coefficients: ', theta)
+# while True:
+#     s = input("New point")
+#     ints = process_input(s, 2)
+#     print(destandardize_value(f(standardize_value(ints[0], X1), standardize_value(ints[1], X2)), Y))
