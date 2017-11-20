@@ -5,7 +5,7 @@ import numpy as np
 from text_utils import read_data, process_input, read_data_np
 from standrad_utils import standardize, destandardize_value
 
-RAND_CONST = 50000
+RAND_CONST = 5000
 
 data = read_data_np()
 x, y = data[..., 0:3], data[..., 3]
@@ -68,7 +68,10 @@ def should_continue():
         dsum = np.sum(delta)
         # print(dsum)
         population = new_population
-        return dsum > delta_stop_lim
+        return True
+
+def define_parents(i):
+
 
 
 # data = standardize(data)
@@ -87,9 +90,12 @@ while should_continue():
     survival_chance = reverse_fitness / coeff_sum
     new_population = np.array([])
     for i in range(population_start_size):
-        choice = [0, 0]
-        while choice[0] == choice[1]:
-            choice = np.random.choice(np.arange(len(survival_chance)), 2, p=survival_chance)
+        fit_inds = fitness.argsort()
+        fitness = fitness[fit_inds[::-1]]
+        population = population[fit_inds[::-1]]
+        choice = define_parents(i)
+        # while choice[0] == choice[1]:
+        #     choice = np.random.choice(np.arange(len(survival_chance)), 2, p=survival_chance)
         new_solution = crossover(choice[0], choice[1])
         new_solution = mutate(new_solution)
         if len(new_population) == 0:
