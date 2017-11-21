@@ -26,9 +26,10 @@ def classify(classifier, feats):
                key=lambda cl: -log(classes[cl]) + \
                               sum(-log(prob.get((cl, feat), 10 ** (-7))) for feat in feats))
 
+
 samples = []
 for i in range(9):
-    folder_name = 'part' + str(i+1)
+    folder_name = 'part' + str(i + 1)
     for filename in os.listdir(folder_name):
         features = []
         with open(folder_name + '\\' + filename, 'r') as f:
@@ -50,6 +51,7 @@ classifier = train(samples)
 folder_name = 'part' + str(10)
 files_count = 0
 right_answers = 0
+tp, tn, fn, fp = 0, 0, 0, 0
 for filename in os.listdir(folder_name):
     features = []
     with open(folder_name + '\\' + filename, 'r') as f:
@@ -67,6 +69,21 @@ for filename in os.listdir(folder_name):
     else:
         label = 1
     class_predicted = classify(classifier, features)
+    if label == 1:
+        if class_predicted == label:
+            tp += 1
+        else:
+            fn += 1
+    else:
+        if class_predicted == label:
+            tn += 1
+        else:
+            fp += 1
     files_count += 1
     right_answers += int(class_predicted == label)
-print(right_answers/files_count)
+precision = tp / (tp + fp)
+recall = tp / (tp + fn)
+f_score = 2 * precision * recall / (precision + recall)
+print(right_answers / files_count)
+print(f_score)
+print("fn / all", fn/files_count)
