@@ -32,7 +32,6 @@ def init_population():
     for i in range(population_start_size - 1):
         population = np.vstack([population, random_arr()])
         # population.append([random.randint(1000)/1000, random.randint(10000)/1000, random.randint(2000)/1000])
-    pass
 
 
 def crossover(father_index, mother_index):
@@ -67,16 +66,24 @@ def should_continue():
         delta = np.abs(delta)
         dsum = np.sum(delta)
         # print(dsum)
-        population = new_population
-        return True
+        # population = new_population
+        return dsum > delta_stop_lim
+
 
 def define_parents(i):
-
+    global cur_m, cur_f
+    cur_m -= 1
+    if cur_m < 13:
+        cur_f -= 1
+        cur_m = cur_f - 1
+    return [cur_f, cur_m]
 
 
 # data = standardize(data)
 init_population()
-while should_continue():
+print(population)
+contin = True
+while contin:
     fitness = np.array([])
     for solution in population:
         y_calculated = np.dot(x, solution)
@@ -84,18 +91,25 @@ while should_continue():
         delta *= delta
         deviation = np.sqrt(np.sum(delta) / n)
         fitness = np.append(fitness, deviation)
-    print(np.average(fitness))
+    average = np.average(fitness)
+    if average < 68000:
+        print(np.min(fitness))
+        # break
+    # print(average)
     reverse_fitness = 1 / fitness
     coeff_sum = np.sum(reverse_fitness)
     survival_chance = reverse_fitness / coeff_sum
     new_population = np.array([])
+    cur_f = population_start_size - 1
+    cur_m = cur_f
     for i in range(population_start_size):
-        fit_inds = fitness.argsort()
-        fitness = fitness[fit_inds[::-1]]
-        population = population[fit_inds[::-1]]
-        choice = define_parents(i)
-        # while choice[0] == choice[1]:
-        #     choice = np.random.choice(np.arange(len(survival_chance)), 2, p=survival_chance)
+        # fit_inds = fitness.argsort()
+        # fitness = fitness[fit_inds[::-1]]
+        # population = population[fit_inds[::-1]]
+        # choice = define_parents(i)
+        choice = [9, 9]
+        while choice[0] == choice[1]:
+            choice = np.random.choice(np.arange(len(survival_chance)), 2, p=survival_chance)
         new_solution = crossover(choice[0], choice[1])
         new_solution = mutate(new_solution)
         if len(new_population) == 0:
@@ -103,4 +117,6 @@ while should_continue():
         else:
             new_population = np.vstack([new_population, new_solution])
             # print(new_solution)
+    contin = should_continue()
+    population = new_population
 print(population)
