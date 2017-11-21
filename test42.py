@@ -4,6 +4,8 @@ from math import log
 
 import os
 
+import math
+
 
 def train(samples):
     classes, freq = defaultdict(lambda: 0), defaultdict(lambda: 0)
@@ -22,9 +24,26 @@ def train(samples):
 
 def classify(classifier, feats):
     classes, prob = classifier
-    return min(classes.keys(),  # calculate argmin(-log(C|O))
-               key=lambda cl: -log(classes[cl]) + \
-                              sum(-log(prob.get((cl, feat), 10 ** (-7))) for feat in feats))
+    pb = []
+    for cl in classes.keys():
+        pb.append(-log(classes[cl]) + \
+                  sum(-log(prob.get((cl, feat), 10 ** (-7))) for feat in feats))
+    e = math.e
+
+    poka = pb[1] - pb[0]
+    if poka > 10:
+        veroyatnost_spama = 0
+    elif poka < -10:
+        veroyatnost_spama = 1
+    else:
+        veroyatnost_spama = 1 / (1 + e ** (poka))
+    if veroyatnost_spama < 0.0000002:
+        return 0
+    else:
+        return 1
+    # return min(classes.keys(),  # calculate argmin(-log(C|O))
+    #            key=lambda cl: -log(classes[cl]) + \
+    #                           sum(-log(prob.get((cl, feat), 10 ** (-7))) for feat in feats))
 
 
 samples = []
@@ -52,6 +71,7 @@ folder_name = 'part' + str(10)
 files_count = 0
 right_answers = 0
 tp, tn, fn, fp = 0, 0, 0, 0
+
 for filename in os.listdir(folder_name):
     features = []
     with open(folder_name + '\\' + filename, 'r') as f:
@@ -86,4 +106,4 @@ recall = tp / (tp + fn)
 f_score = 2 * precision * recall / (precision + recall)
 print(right_answers / files_count)
 print(f_score)
-print("fn / all", fn/files_count)
+print("fn / all", fn / files_count)
