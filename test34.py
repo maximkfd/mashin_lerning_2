@@ -7,13 +7,18 @@ from standrad_utils import standardize, destandardize_value
 
 RAND_CONST = 5000
 
+
+def random_arr():
+    return np.random.rand(3) * RAND_CONST
+
+
 data = read_data_np()
 x, y = data[..., 0:3], data[..., 3]
 n = len(x)
-population = np.array(np.random.rand(3))
+population = np.array(random_arr())
 population_start_size = 20
-mutate_probability = 0.1
-mutation = 0.5
+mutate_probability = 0.5
+mutation = 0.05
 delta_stop_lim = 0.00000001
 
 
@@ -92,10 +97,12 @@ while contin:
         deviation = np.sqrt(np.sum(delta) / n)
         fitness = np.append(fitness, deviation)
     average = np.average(fitness)
-    if average < 68000:
+    if average < 69000:
         print(np.min(fitness))
-        # break
-    # print(average)
+        break
+    # print(np.min(fitness))
+    # print(np.max(fitness))
+    # print()
     reverse_fitness = 1 / fitness
     coeff_sum = np.sum(reverse_fitness)
     survival_chance = reverse_fitness / coeff_sum
